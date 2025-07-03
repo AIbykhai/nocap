@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronUp, X } from 'lucide-react';
-import { supabase } from '../lib/supabaseClient.js';
+import { supabase } from '../lib/supabaseClient';
 
 interface Transaction {
   id: number;
@@ -246,22 +246,24 @@ const TransactionPanel: React.FC<TransactionPanelProps> = ({ isOpen, onClose, on
     }).format(amount);
   };
 
-  if (!isOpen) return null;
-
   const orderedDateKeys = getOrderedDateKeys();
 
   return (
-    <div className="fixed inset-0 z-50">
+    <>
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-black bg-opacity-20 backdrop-blur-sm"
+        className={`fixed inset-0 bg-black bg-opacity-25 z-40 transition-opacity duration-300 ${
+          isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
         onClick={onClose}
       />
       
-      {/* Panel - CRITICAL FIX: Improved height and overflow handling */}
+      {/* Panel - Smooth sliding animation from bottom */}
       <div 
         ref={panelRef}
-        className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl transition-transform duration-300 ease-out flex flex-col"
+        className={`fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-50 transform transition-transform duration-300 ease-out flex flex-col ${
+          isOpen ? 'translate-y-0' : 'translate-y-full'
+        }`}
         style={{ 
           height: '85vh',
           maxHeight: '85vh',
@@ -408,7 +410,7 @@ const TransactionPanel: React.FC<TransactionPanelProps> = ({ isOpen, onClose, on
           )}
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

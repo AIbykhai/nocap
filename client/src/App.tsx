@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from './lib/supabaseClient.js';
+import { supabase } from './lib/supabaseClient';
 import Auth from './components/Auth';
 import HomeScreen from './components/HomeScreen';
+import type { Session } from '@supabase/supabase-js';
 
 function App() {
-  const [session, setSession] = useState(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

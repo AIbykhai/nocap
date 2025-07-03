@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Settings, Camera, ChevronUp } from 'lucide-react';
-import { supabase } from '../lib/supabaseClient.js';
+import { supabase } from '../lib/supabaseClient';
 import ExpenseModal from './ExpenseModal';
 import BudgetModal from './BudgetModal';
 import TransactionPanel from './TransactionPanel';
@@ -584,10 +584,7 @@ const HomeScreen: React.FC = () => {
 
   const heroNumberStyles = getHeroNumberStyles();
 
-  // Show Settings Screen if open
-  if (isSettingsOpen) {
-    return <SettingsScreen onBack={() => setIsSettingsOpen(false)} />;
-  }
+
 
   // Debug logging for onboarding state
   console.log('🔍 Onboarding state:', { isOnboarding, onboardingPhase, loading });
@@ -980,6 +977,12 @@ const HomeScreen: React.FC = () => {
             isOpen={isTransactionPanelOpen}
             onClose={() => setIsTransactionPanelOpen(false)}
             onEditTransaction={handleEditTransaction}
+          />
+
+          {/* Settings Panel */}
+          <SettingsScreen
+            isOpen={isSettingsOpen}
+            onBack={() => setIsSettingsOpen(false)}
           />
         </>
       )}

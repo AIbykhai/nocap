@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, DollarSign, Calendar, Target } from 'lucide-react';
-import { supabase } from '../lib/supabaseClient.js';
+import { supabase } from '../lib/supabaseClient';
 
 interface BudgetModalProps {
   isOpen: boolean;
