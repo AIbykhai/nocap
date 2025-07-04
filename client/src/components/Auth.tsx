@@ -7,6 +7,48 @@ const Auth = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
 
+  // Default categories to create for new users
+  const defaultCategories = [
+    { name: 'Food & Drinks', emoji: '🍔' },
+    { name: 'Shopping', emoji: '🛍️' },
+    { name: 'Transportation', emoji: '🚗' },
+    { name: 'Entertainment', emoji: '🎬' },
+    { name: 'Bills & Utilities', emoji: '💡' },
+    { name: 'Healthcare', emoji: '🏥' },
+    { name: 'Education', emoji: '📚' },
+    { name: 'Travel', emoji: '✈️' },
+    { name: 'Personal Care', emoji: '💄' },
+    { name: 'Other', emoji: '📦' }
+  ];
+
+  const setupDefaultCategories = async (userId: string) => {
+    try {
+      console.log('Setting up default categories for user:', userId);
+      
+      // Prepare categories with user_id
+      const categoriesToInsert = defaultCategories.map(category => ({
+        ...category,
+        user_id: userId
+      }));
+
+      // Insert all default categories
+      const { error } = await supabase
+        .from('categories')
+        .insert(categoriesToInsert);
+
+      if (error) {
+        console.error('Error creating default categories:', error);
+        throw error;
+      }
+
+      console.log('Default categories created successfully');
+    } catch (error) {
+      console.error('Failed to setup default categories:', error);
+      // Don't throw here - we don't want to fail the entire sign-up process
+      // if category creation fails
+    }
+  };
+
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -21,7 +63,17 @@ const Auth = () => {
 
       if (error) throw error;
       
-      alert('Check your email for the confirmation link!');
+      // If sign-up was successful and we have a user
+      if (data.user) {
+        console.log('User signed up successfully:', data.user.id);
+        
+        // Create default categories for the new user
+        await setupDefaultCategories(data.user.id);
+        
+        alert('Account created successfully! Check your email for the confirmation link.');
+      } else {
+        alert('Check your email for the confirmation link!');
+      }
     } catch (error: any) {
       setError(error.message);
     } finally {
