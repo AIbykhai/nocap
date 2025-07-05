@@ -403,39 +403,53 @@ const ManageCategoriesScreen: React.FC<ManageCategoriesScreenProps> = ({ isOpen,
     }
 
     try {
-      // Try to delete with user_id filter first, fallback without it
-      let deleteError = null;
-      
-      try {
-        const { error } = await supabase
-          .from('categories')
-          .delete()
-          .eq('id', category.id)
-          .eq('user_id', category.user_id);
-        deleteError = error;
-      } catch (err) {
-        deleteError = err;
+      console.log('Attempting to delete category:', category.id);
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        alert('User not authenticated');
+        return;
       }
 
-      // If user_id column doesn't exist, try without the user_id filter
-      if (deleteError && (deleteError as any).code === '42703') {
-        const { error: fallbackError } = await supabase
-          .from('categories')
-          .delete()
-          .eq('id', category.id);
+      // Attempt to delete the category from the database
+      const { error: deleteError } = await supabase
+        .from('categories')
+        .delete()
+        .eq('id', category.id)
+        .eq('user_id', user.id);
+
+      if (deleteError) {
+        console.error('Database deletion error:', deleteError);
         
-        if (fallbackError) {
-          throw fallbackError;
+        // Check if it's a foreign key constraint error
+        if (deleteError.code === '23503' || deleteError.message.includes('foreign key') || deleteError.message.includes('violates')) {
+          alert('Failed to delete category. Please make sure no expenses are linked to it.');
+          return;
         }
-      } else if (deleteError) {
-        throw deleteError;
+        
+        // For other errors, show a generic message
+        alert('Failed to delete category. Please try again.');
+        return;
       }
 
-      // Refresh categories list
-      await fetchCategories();
+      console.log('Database deletion successful');
+
+      // Update local UI state by filtering out the deleted category
+      setCategories(prevCategories => 
+        prevCategories.filter(cat => cat.id !== category.id)
+      );
+
+      console.log('Local state updated successfully');
+
     } catch (error: any) {
       console.error('Error deleting category:', error);
-      setError(error.message || 'Failed to delete category');
+      
+      // Check if it's a foreign key constraint error
+      if (error.message && (error.message.includes('foreign key') || error.message.includes('violates'))) {
+        alert('Failed to delete category. Please make sure no expenses are linked to it.');
+      } else {
+        alert('Failed to delete category. Please try again.');
+      }
     }
   };
 
