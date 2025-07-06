@@ -67,18 +67,29 @@ const ExpenseModal: React.FC<ExpenseModalProps> = ({
     }
   }, [isOpen, editingExpense]);
 
-  const fetchCategories = async () => {
+const fetchCategories = async () => {
     try {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+      if (userError) throw userError;
+      if (!user) throw new Error('User not authenticated');
+
+      // --- ADD THIS LOG ---
+      console.log(`FETCHING CATEGORIES FOR USER ID: ${user.id}`);
+
       const { data, error } = await supabase
         .from('categories')
         .select('id, name, emoji')
+        .eq('user_id', user.id)
         .order('name');
+
+      // --- AND ADD THIS LOG ---
+      console.log('DATA RETURNED FROM SUPABASE:', data);
 
       if (error) throw error;
 
       setCategories(data || []);
       
-      // Set first category as default if available and not editing
       if (data && data.length > 0 && !editingExpense) {
         setSelectedCategoryId(data[0].id);
       }
