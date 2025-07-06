@@ -41,7 +41,7 @@ function App() {
           <Auth />
         </div>
       ) : (
-        <HomeScreen />
+        <HomeScreen key={session.user.id} />
       )}
     </div>
   );
