@@ -153,7 +153,7 @@ const BudgetModal: React.FC<BudgetModalProps> = ({ isOpen, onClose, onBudgetSave
               className="text-xl font-semibold"
               style={{ color: '#1C1C1E' }}
             >
-              Set Budget
+              Set Your Cap
             </h2>
           </div>
           <button
