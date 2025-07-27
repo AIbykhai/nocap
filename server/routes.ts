@@ -99,7 +99,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log('Server: User deletion requested for:', userId);
       
-      // Step 1: Delete user data from database tables first
+      // Delete user data from database tables first
       console.log('Server: Deleting user expenses...');
       const { error: expensesError } = await supabaseAdmin
         .from('expenses')
@@ -108,7 +108,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       if (expensesError) {
         console.error('Server: Error deleting expenses:', expensesError);
-        // Continue with deletion even if this fails
       }
 
       console.log('Server: Deleting user budgets...');
@@ -119,31 +118,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       if (budgetsError) {
         console.error('Server: Error deleting budgets:', budgetsError);
-        // Continue with deletion even if this fails
       }
 
-      console.log('Server: Deleting user categories...');
-      const { error: categoriesError } = await supabaseAdmin
-        .from('categories')
-        .delete()
-        .eq('user_id', userId);
-
-      if (categoriesError) {
-        console.error('Server: Error deleting categories:', categoriesError);
-        // Continue with deletion even if this fails
-      }
-
-      // Step 2: Delete the user from Supabase Auth using admin privileges
+      // Delete the user from Supabase Auth using admin privileges
       console.log('Server: Deleting user from Supabase Auth...');
       const { error: deleteUserError } = await supabaseAdmin.auth.admin.deleteUser(userId);
       
       if (deleteUserError) {
         console.error('Server: Error deleting auth user:', deleteUserError);
-        return res.status(500).json({ 
-          error: 'Failed to delete user account', 
-          details: deleteUserError.message,
-          code: deleteUserError.code || 'unknown'
-        });
+        return res.status(500).json({ error: 'Failed to delete user account', details: deleteUserError.message });
       }
 
       console.log('Server: User account and all data deleted successfully');
@@ -151,10 +134,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
     } catch (error) {
       console.error('Server: Error deleting user:', error);
-      res.status(500).json({ 
-        error: 'Failed to delete user', 
-        details: error instanceof Error ? error.message : 'Unknown error'
-      });
+      res.status(500).json({ error: 'Failed to delete user' });
     }
   });
 

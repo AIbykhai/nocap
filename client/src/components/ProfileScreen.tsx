@@ -257,7 +257,6 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ isOpen, onBack }) => {
       
       if (!user) {
         console.error('No user found');
-        alert('No user found. Please log in again.');
         return;
       }
 
@@ -273,26 +272,22 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ isOpen, onBack }) => {
         body: JSON.stringify({ userId: user.id }),
       });
 
-      const result = await response.json();
-      console.log('Server response:', result);
-
       if (!response.ok) {
-        console.error('Server error:', result);
-        alert(`Failed to delete account: ${result.error || 'Unknown error'}`);
-        return;
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to delete account');
       }
 
-      console.log('Account deletion successful:', result.message);
-      alert('Account deleted successfully. You will be logged out.');
+      const result = await response.json();
+      console.log('Server response:', result.message);
       
-      // Force sign out to clear any cached session data
-      await supabase.auth.signOut();
-      
+      // The auth user is now deleted, so we don't need to manually sign out
+      // The app will automatically redirect to login when it detects no user
       console.log('Account deletion completed successfully');
       
     } catch (error) {
       console.error('Error during account deletion:', error);
-      alert(`Error during account deletion: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      // Even if deletion fails, sign out the user
+      await supabase.auth.signOut();
     } finally {
       setIsDeleting(false);
       setShowDeleteConfirmation(false);
