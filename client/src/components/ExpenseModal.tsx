@@ -436,7 +436,7 @@ const fetchCategories = async () => {
                   color: 'white'
                 }}
               >
-                {loading ? 'Saving...' : isEditing ? 'Update Expense' : 'Save Expense'}
+                {loading ? 'Saving...' : isEditing ? 'Update Expense' : 'Save It'}
               </button>
 
               {/* Delete Button - Only show when editing, no confirmation */}
