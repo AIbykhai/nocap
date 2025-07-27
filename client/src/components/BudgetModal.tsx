@@ -275,7 +275,7 @@ const BudgetModal: React.FC<BudgetModalProps> = ({ isOpen, onClose, onBudgetSave
                   color: 'white'
                 }}
               >
-                {loading ? 'Saving...' : 'Save Budget'}
+                {loading ? 'Saving...' : 'Save It'}
               </button>
 
               {/* Helper text */}
