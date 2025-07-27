@@ -73,12 +73,12 @@ const BudgetModal: React.FC<BudgetModalProps> = ({ isOpen, onClose, onBudgetSave
     const monthlyAmount = monthlyBudget.trim() ? parseFloat(monthlyBudget) : null;
 
     if (dailyAmount !== null && (isNaN(dailyAmount) || dailyAmount < 0)) {
-      setError('Please enter a valid daily budget amount');
+      setError('Please enter a valid daily cap amount');
       return;
     }
 
     if (monthlyAmount !== null && (isNaN(monthlyAmount) || monthlyAmount < 0)) {
-      setError('Please enter a valid monthly budget amount');
+      setError('Please enter a valid monthly cap amount');
       return;
     }
 
@@ -187,14 +187,14 @@ const BudgetModal: React.FC<BudgetModalProps> = ({ isOpen, onClose, onBudgetSave
             </div>
           ) : (
             <div className="space-y-5">
-              {/* Daily Budget */}
+              {/* Daily Cap */}
               <div>
                 <label 
                   htmlFor="dailyBudget" 
                   className="block text-sm font-medium mb-2"
                   style={{ color: '#374151' }}
                 >
-                  Daily Budget
+                  Daily Cap
                 </label>
                 <div className="relative">
                   <DollarSign 
@@ -226,14 +226,14 @@ const BudgetModal: React.FC<BudgetModalProps> = ({ isOpen, onClose, onBudgetSave
                 </p>
               </div>
 
-              {/* Monthly Budget */}
+              {/* Monthly Cap */}
               <div>
                 <label 
                   htmlFor="monthlyBudget" 
                   className="block text-sm font-medium mb-2"
                   style={{ color: '#374151' }}
                 >
-                  Monthly Budget
+                  Monthly Cap
                 </label>
                 <div className="relative">
                   <Calendar 
