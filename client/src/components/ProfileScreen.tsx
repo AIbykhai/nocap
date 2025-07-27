@@ -253,28 +253,21 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ isOpen, onBack }) => {
     try {
       setIsDeleting(true);
       
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      const { data: { user } } = await supabase.auth.getUser();
       
-      if (userError || !user) {
-        console.error('No user found:', userError);
-        return;
-      }
-
-      if (sessionError || !session) {
-        console.error('No session found:', sessionError);
+      if (!user) {
+        console.error('No user found');
         return;
       }
 
       console.log('Starting account deletion process for user:', user.id);
       
-      // Call Supabase Edge Function to handle complete user account deletion
-      console.log('Requesting complete account deletion from edge function...');
-      const response = await fetch('https://ciycpzeffwrrngwiguzy.functions.supabase.co/delete-user', {
+      // Call server-side API to handle complete user account deletion
+      console.log('Requesting complete account deletion from server...');
+      const response = await fetch('/api/user', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({ userId: user.id }),
       });
@@ -285,7 +278,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ isOpen, onBack }) => {
       }
 
       const result = await response.json();
-      console.log('Edge function response:', result.message);
+      console.log('Server response:', result.message);
       
       // The auth user is now deleted, so we don't need to manually sign out
       // The app will automatically redirect to login when it detects no user
